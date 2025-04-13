@@ -2,10 +2,13 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 )
 
-func GetDB() (*sql.DB, error){
-	db, err := sql.Open("mysql", "user:password@/dbname")
+func GetDB(config map[string]string) (*sql.DB, error){
+	connectionString:=fmt.Sprintf("%s:%s@%s/%s",config["user-name"], config["password"], config["ip-address"], config["db-name"])
+
+	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
 		return nil, err
 	}
