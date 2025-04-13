@@ -13,7 +13,6 @@ func GetDB(config map[string]string) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
 
 	// Open doesn't open a connection. Validate DSN data:
 	err = db.Ping()
