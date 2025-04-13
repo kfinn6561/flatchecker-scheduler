@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flatchecker-scheduler/db"
 	"fmt"
 	"os"
 	"strings"
@@ -12,6 +13,14 @@ func main(){
 		panic(fmt.Sprintf("error reading config: %v",  err))
 	}
 	fmt.Println(config)
+
+	db,err:=db.GetDB(config)
+	if err!=nil{
+		panic(fmt.Sprintf("error connecting to db: %v",  err))
+	}
+
+	db.Ping()
+
 	fmt.Println("Hello, World!")
 }
 
