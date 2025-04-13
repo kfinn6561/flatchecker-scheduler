@@ -7,16 +7,16 @@ import (
 	"strings"
 )
 
-func main(){
-	config, err:=ReadConfig("C:\\Users\\kiera\\flatchecker\\flatchecker-database\\setup\\db_credentials.txt")
-	if err!=nil{
-		panic(fmt.Sprintf("error reading config: %v",  err))
+func main() {
+	config, err := ReadConfig("C:\\Users\\kiera\\flatchecker\\flatchecker-database\\setup\\db_credentials.txt")
+	if err != nil {
+		panic(fmt.Sprintf("error reading config: %v", err))
 	}
 	fmt.Println(config)
 
-	db,err:=db.GetDB(config)
-	if err!=nil{
-		panic(fmt.Sprintf("error connecting to db: %v",  err))
+	db, err := db.GetDB(config)
+	if err != nil {
+		panic(fmt.Sprintf("error connecting to db: %v", err))
 	}
 
 	db.Ping()
@@ -24,20 +24,18 @@ func main(){
 	fmt.Println("Hello, World!")
 }
 
-
-
-func ReadConfig(filename string) (map[string]string, error){
+func ReadConfig(filename string) (map[string]string, error) {
 	rawData, err := os.ReadFile(filename)
-	if err!=nil{
+	if err != nil {
 		return nil, err
 	}
 
-	out:=make(map[string]string)
+	out := make(map[string]string)
 
-	lines:=strings.Split(string(rawData), "\n")
-	for _, line:= range lines{
-		words:=strings.Split(line," ")
-		out[words[0]]=words[1]
+	lines := strings.Split(string(rawData), "\n")
+	for _, line := range lines {
+		words := strings.Split(line, " ")
+		out[words[0]] = words[1]
 	}
 
 	return out, nil
