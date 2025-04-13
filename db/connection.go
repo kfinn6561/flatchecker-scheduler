@@ -2,8 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"os"
-	"strings"
 )
 
 func GetDB() (*sql.DB, error){
@@ -20,21 +18,4 @@ func GetDB() (*sql.DB, error){
 	}
 
 	return db, nil
-}
-
-func ReadDBConfig(filename string) (map[string]string, error){
-	rawData, err := os.ReadFile(filename)
-	if err!=nil{
-		return nil, err
-	}
-
-	out:=make(map[string]string)
-
-	lines:=strings.Split(string(rawData), "\n")
-	for _, line:= range lines{
-		words:=strings.Split(line," ")
-		out[words[0]]=words[1]
-	}
-
-	return out, nil
 }
