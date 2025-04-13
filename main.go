@@ -18,8 +18,14 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("error connecting to db: %v", err))
 	}
+	defer db.Close()
 
-	db.Ping()
+	stmt, err := db.Prepare("INSERT into User (UserName, Email) VALUES (?, ?)")
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	defer stmt.Close()
+	stmt.Exec("tony", "tony@tonymail.com")
 
 	fmt.Println("Hello, World!")
 }
