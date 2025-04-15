@@ -16,7 +16,7 @@ func main() {
 	pubsubClient, err := pubsublib.GetClient(ctx)
 	handleError("error creating pubsub client", err)
 
-	topic, err := pubsubClient.CreateTopic(ctx, "test_topic")
+	topic, err := pubsublib.GetTopic(ctx, pubsubClient, "test-topic")
 	handleError("error creating topic", err)
 
 	res := topic.Publish(ctx, &pubsub.Message{
