@@ -12,6 +12,17 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
+	pubsubClient, err := pubsublib.GetClient(ctx)
+	handleError("error creating pubsub client", err)
+	topic := pubsubClient.Topic("test_topic")
+	res := topic.Publish(ctx, &pubsub.Message{
+		Data: []byte("hello world"),
+	})
+
+	msgID, err := res.Get(ctx)
+	handleError("error sending message", err)
+	fmt.Println(msgID)
 
 	config, err := ReadConfig("C:\\Users\\kiera\\flatchecker\\flatchecker-database\\setup\\db_credentials.txt")
 	handleError("error reading config", err)
