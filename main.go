@@ -1,31 +1,30 @@
 package main
 
 import (
+	"context"
 	"flatchecker-scheduler/db"
+	"flatchecker-scheduler/pubsublib"
 	"fmt"
 	"os"
 	"strings"
+
+	"cloud.google.com/go/pubsub"
 )
 
 func main() {
+
 	config, err := ReadConfig("C:\\Users\\kiera\\flatchecker\\flatchecker-database\\setup\\db_credentials.txt")
-	if err != nil {
-		panic(fmt.Sprintf("error reading config: %v", err))
-	}
+	handleError("error reading config", err)
 	fmt.Println(config)
 
 	db, err := db.GetDB(config)
-	if err != nil {
-		panic(fmt.Sprintf("error connecting to db: %v", err))
-	}
+	handleError("error connecting to db", err)
 	defer db.Close()
 
 	stmt, err := db.Prepare("INSERT into User (UserName, Email) VALUES (?, ?)")
-	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
-	}
+	handleError("error preparing statement", err)
 	defer stmt.Close()
-	stmt.Exec("tony", "tony@tonymail.com")
+	//stmt.Exec("tony", "tony@tonymail.com")
 
 	fmt.Println("Hello, World!")
 }
@@ -45,4 +44,10 @@ func ReadConfig(filename string) (map[string]string, error) {
 	}
 
 	return out, nil
+}
+
+func handleError(errorMessage string, err error) {
+	if err != nil {
+		panic(fmt.Sprintf("%s: %v", errorMessage, err))
+	}
 }
