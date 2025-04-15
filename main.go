@@ -15,7 +15,10 @@ func main() {
 	ctx := context.Background()
 	pubsubClient, err := pubsublib.GetClient(ctx)
 	handleError("error creating pubsub client", err)
-	topic := pubsubClient.Topic("test_topic")
+
+	topic, err := pubsubClient.CreateTopic("test_topic")
+	handleError("error creating topic", err)
+
 	res := topic.Publish(ctx, &pubsub.Message{
 		Data: []byte("hello world"),
 	})
