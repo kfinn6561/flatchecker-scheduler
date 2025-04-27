@@ -15,28 +15,28 @@ type Schedule struct {
 }
 
 func PublishSchedules(ctx context.Context, schedules []Schedule, client *pubsub.Client) error {
-	topic, err := GetTopic(ctx,client,SCHEDULE_TOPIC_NAME)
-	if err!=nil{
+	topic, err := GetTopic(ctx, client, SCHEDULE_TOPIC_NAME)
+	if err != nil {
 		return err
 	}
 
-	results:=make([]*pubsub.PublishResult,len(schedules))
-	for i,schedule:=range schedules{
-		msgBytes,err:=json.Marshal(schedule)
-		if err!=nil{
+	results := make([]*pubsub.PublishResult, len(schedules))
+	for i, schedule := range schedules {
+		msgBytes, err := json.Marshal(schedule)
+		if err != nil {
 			return err
 		}
 
-		msg:=&pubsub.Message{
+		msg := &pubsub.Message{
 			Data: msgBytes,
 		}
-		result:=topic.Publish(ctx,msg)
-		results[i]=result
+		result := topic.Publish(ctx, msg)
+		results[i] = result
 	}
 
-	for _,result := range results{
-		_,err=result.Get(ctx)
-		if err!=nil{
+	for _, result := range results {
+		_, err = result.Get(ctx)
+		if err != nil {
 			return err
 		}
 	}
