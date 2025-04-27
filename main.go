@@ -35,11 +35,6 @@ func main() {
 	handleError("error connecting to db", err)
 	defer dbConn.Close()
 
-	stmt, err := dbConn.Prepare("INSERT into User (UserName, Email) VALUES (?, ?)")
-	handleError("error preparing statement", err)
-	defer stmt.Close()
-	//stmt.Exec("tony", "tony@tonymail.com")
-
 	schedules, err := db.GetSchedules(dbConn)
 	handleError("error getting schedules", err)
 	fmt.Println(schedules)
