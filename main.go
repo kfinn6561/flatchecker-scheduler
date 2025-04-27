@@ -20,7 +20,6 @@ func main() {
 
 	config, err := ReadConfig("C:\\Users\\kiera\\flatchecker\\flatchecker-database\\setup\\db_credentials.txt")
 	handleError("error reading config", err)
-	fmt.Println(config)
 
 	dbConn, err := db.GetDB(config)
 	handleError("error connecting to db", err)
