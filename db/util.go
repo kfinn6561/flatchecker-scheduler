@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-const SQL_FOLDER = "sql"
+const SQL_FOLDER = "db/sql"
 
 func readSqlFile(sqlName string) (string, error) {
 	path := filepath.Join(SQL_FOLDER, sqlName)
