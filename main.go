@@ -31,14 +31,18 @@ func main() {
 	handleError("error reading config", err)
 	fmt.Println(config)
 
-	db, err := db.GetDB(config)
+	dbConn, err := db.GetDB(config)
 	handleError("error connecting to db", err)
-	defer db.Close()
+	defer dbConn.Close()
 
-	stmt, err := db.Prepare("INSERT into User (UserName, Email) VALUES (?, ?)")
+	stmt, err := dbConn.Prepare("INSERT into User (UserName, Email) VALUES (?, ?)")
 	handleError("error preparing statement", err)
 	defer stmt.Close()
 	//stmt.Exec("tony", "tony@tonymail.com")
+
+	schedules, err := db.GetSchedules(dbConn)
+	handleError("error getting schedules", err)
+	fmt.Println(schedules)
 
 	fmt.Println("Hello, World!")
 }
