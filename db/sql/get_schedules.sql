@@ -1,0 +1,1 @@
+select ID as ScheduleId, SearchId from Schedule where LastSearched < NOW()
