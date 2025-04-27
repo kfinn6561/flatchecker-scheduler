@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const UPDATE_SCHEDULE_SQL_FILE_NAME = "update_schedule"
+const UPDATE_SCHEDULE_SQL_FILE_NAME = "update_schedule.sql"
 
 type UpdateScheduleRequest struct {
 	Id         int
