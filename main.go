@@ -31,7 +31,7 @@ func main() {
 }
 
 func readAndPublishSchedules(ctx context.Context, dbConn *sql.DB, pubsubClient *pubsub.Client) error {
-	schedules, err := db.GetSchedules(dbConn)
+	schedules, err := GetAndUpdateSchedules(dbConn)
 	if err != nil {
 		return err
 	}
