@@ -9,12 +9,12 @@ import (
 
 const SCHEDULE_TOPIC_NAME = "flatchecker_scheduled_searches"
 
-type Schedule struct {
+type ScheduledSearchesMessage struct {
 	ScheduleId int
 	SearchId   int
 }
 
-func PublishSchedules(ctx context.Context, schedules []Schedule, client *pubsub.Client) error {
+func PublishSchedules(ctx context.Context, schedules []ScheduledSearchesMessage, client *pubsub.Client) error {
 	topic, err := GetTopic(ctx, client, SCHEDULE_TOPIC_NAME)
 	if err != nil {
 		return err
