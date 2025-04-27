@@ -26,6 +26,7 @@ func main() {
 	defer dbConn.Close()
 
 	err = readAndPublishSchedules(ctx, dbConn, pubsubClient)
+	handleError("error reading and publishing schedules", err)
 	fmt.Println("done")
 }
 
