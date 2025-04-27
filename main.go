@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"flatchecker-scheduler/db"
+	"flatchecker-scheduler/mapper"
 	"flatchecker-scheduler/pubsublib"
 	"fmt"
 	"os"
@@ -16,31 +18,25 @@ func main() {
 	pubsubClient, err := pubsublib.GetClient(ctx)
 	handleError("error creating pubsub client", err)
 
-	topic, err := pubsublib.GetTopic(ctx, pubsubClient, "test-topic")
-	handleError("error creating topic", err)
-
-	res := topic.Publish(ctx, &pubsub.Message{
-		Data: []byte("hello world"),
-	})
-
-	msgID, err := res.Get(ctx)
-	handleError("error sending message", err)
-	fmt.Println(msgID)
-
 	config, err := ReadConfig("C:\\Users\\kiera\\flatchecker\\flatchecker-database\\setup\\db_credentials.txt")
 	handleError("error reading config", err)
-	fmt.Println(config)
 
-	db, err := db.GetDB(config)
+	dbConn, err := db.GetDB(config)
 	handleError("error connecting to db", err)
-	defer db.Close()
+	defer dbConn.Close()
 
-	stmt, err := db.Prepare("INSERT into User (UserName, Email) VALUES (?, ?)")
-	handleError("error preparing statement", err)
-	defer stmt.Close()
-	//stmt.Exec("tony", "tony@tonymail.com")
+	err = readAndPublishSchedules(ctx, dbConn, pubsubClient)
+	fmt.Println("done")
+}
 
-	fmt.Println("Hello, World!")
+func readAndPublishSchedules(ctx context.Context, dbConn *sql.DB, pubsubClient *pubsub.Client) error {
+	schedules, err := db.GetSchedules(dbConn)
+	if err != nil {
+		return err
+	}
+
+	pubsubSchedules := mapper.MapSchedules(schedules)
+	return pubsublib.PublishSchedules(ctx, pubsubSchedules, pubsubClient)
 }
 
 func ReadConfig(filename string) (map[string]string, error) {
