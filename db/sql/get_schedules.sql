@@ -1,1 +1,4 @@
-select ID as ScheduleId, SearchId from Schedule where LastSearched < NOW()
+select ID as ScheduleId,
+    SearchId
+FROM Schedule
+WHERE LastSearched < NOW()
