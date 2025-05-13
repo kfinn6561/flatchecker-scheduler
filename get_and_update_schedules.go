@@ -21,8 +21,8 @@ func GetAndUpdateSchedules(dbConn *sql.DB) ([]db.GetSchedulesResponse, error) {
 		requests[i] = request
 	}
 
-	err= db.UpdateSchedules(requests, dbConn)
-	if err!=nil{
+	err = db.UpdateSchedules(requests, dbConn)
+	if err != nil {
 		return nil, err
 	}
 	return schedules, nil

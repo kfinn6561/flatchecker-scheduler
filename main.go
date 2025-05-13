@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/pubsub"
 )
@@ -20,7 +21,6 @@ func main() {
 	handleError("error creating pubsub client", err)
 	fmt.Println("successfully created pubsub client")
 
-
 	config, err := ReadConfig("C:\\Users\\kiera\\flatchecker\\flatchecker-database\\setup\\local_db_credentials.txt")
 	handleError("error reading config", err)
 	fmt.Println("successfully read config")
@@ -30,8 +30,13 @@ func main() {
 	defer dbConn.Close()
 	fmt.Println("successfully connected to database")
 
-	err = readAndPublishSchedules(ctx, dbConn, pubsubClient)
-	handleError("error reading and publishing schedules", err)
+	for {
+		err = readAndPublishSchedules(ctx, dbConn, pubsubClient)
+		time.Sleep(1 * time.Second)
+		if err != nil {
+			fmt.Println("Error reading schedules", err)
+		}
+	}
 	fmt.Println("done")
 }
 
