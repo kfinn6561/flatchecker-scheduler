@@ -7,7 +7,7 @@ import (
 )
 
 func GetDB(config map[string]string) (*sql.DB, error) {
-	connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", config["user-name"], config["password"], config["ip-address"], config["db-name"])
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", config["user-name"], config["password"], config["ip-address"], config["db-name"])
 
 	db, err := sql.Open("mysql", connectionString)
 	if err != nil {

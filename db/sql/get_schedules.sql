@@ -1,4 +1,6 @@
 select ID as ScheduleId,
-    SearchId
+    SearchId,
+    NextSearch,
+    SearchDelayMinutes
 FROM Schedule
 WHERE NextSearch < NOW()

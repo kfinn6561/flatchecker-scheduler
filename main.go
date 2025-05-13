@@ -14,23 +14,29 @@ import (
 )
 
 func main() {
+	fmt.Println("starting")
 	ctx := context.Background()
 	pubsubClient, err := pubsublib.GetClient(ctx)
 	handleError("error creating pubsub client", err)
+	fmt.Println("successfully created pubsub client")
 
-	config, err := ReadConfig("C:\\Users\\kiera\\flatchecker\\flatchecker-database\\setup\\db_credentials.txt")
+
+	config, err := ReadConfig("C:\\Users\\kiera\\flatchecker\\flatchecker-database\\setup\\local_db_credentials.txt")
 	handleError("error reading config", err)
+	fmt.Println("successfully read config")
 
 	dbConn, err := db.GetDB(config)
 	handleError("error connecting to db", err)
 	defer dbConn.Close()
+	fmt.Println("successfully connected to database")
 
 	err = readAndPublishSchedules(ctx, dbConn, pubsubClient)
+	handleError("error reading and publishing schedules", err)
 	fmt.Println("done")
 }
 
 func readAndPublishSchedules(ctx context.Context, dbConn *sql.DB, pubsubClient *pubsub.Client) error {
-	schedules, err := db.GetSchedules(dbConn)
+	schedules, err := GetAndUpdateSchedules(dbConn)
 	if err != nil {
 		return err
 	}
@@ -50,7 +56,7 @@ func ReadConfig(filename string) (map[string]string, error) {
 	lines := strings.Split(string(rawData), "\n")
 	for _, line := range lines {
 		words := strings.Split(line, " ")
-		out[words[0]] = words[1]
+		out[words[0]] = strings.TrimSpace(words[1])
 	}
 
 	return out, nil
