@@ -30,8 +30,14 @@ func main() {
 	defer dbConn.Close()
 	fmt.Println("successfully connected to database")
 
+
+	for{
 	err = readAndPublishSchedules(ctx, dbConn, pubsubClient)
-	handleError("error reading and publishing schedules", err)
+	time.Sleep(1*time.Second)
+	if err!=nil{
+		fmt.Println("Error reading schedules",err)
+	}
+}
 	fmt.Println("done")
 }
 
