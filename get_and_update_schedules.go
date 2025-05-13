@@ -16,7 +16,7 @@ func GetAndUpdateSchedules(dbConn *sql.DB) ([]db.GetSchedulesResponse, error) {
 	for i, schedule := range schedules {
 		request := db.UpdateScheduleRequest{
 			Id:         schedule.ScheduleId,
-			NextSearch: schedule.NextSearch.Add(time.Minute * time.Duration(schedule.SearchDelayMinutes)),
+			NextSearch: time.Now().Add(time.Minute * time.Duration(schedule.SearchDelayMinutes)),
 		}
 		requests[i] = request
 	}
