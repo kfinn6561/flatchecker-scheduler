@@ -16,12 +16,19 @@ import (
 
 func main() {
 	fmt.Println("starting")
+	if len(os.Args) < 2 {
+        fmt.Println("Usage: flatchecker-scheduler <config-filename>")
+        os.Exit(1)
+    }
+    configFilename := os.Args[1]
+
+
 	ctx := context.Background()
 	pubsubClient, err := pubsublib.GetClient(ctx)
 	handleError("error creating pubsub client", err)
 	fmt.Println("successfully created pubsub client")
 
-	config, err := ReadConfig("db_credentials.txt")
+	config, err := ReadConfig(configFilename)
 	handleError("error reading config", err)
 	fmt.Println("successfully read config")
 

@@ -24,4 +24,4 @@ COPY --from=builder /app/flatchecker-scheduler .
 COPY prod_config.txt .
 
 # Command to run the application
-CMD ["./flatchecker-scheduler"]
+CMD ["./flatchecker-scheduler prod_config.txt"]
