@@ -21,7 +21,7 @@ func main() {
 	handleError("error creating pubsub client", err)
 	fmt.Println("successfully created pubsub client")
 
-	config, err := ReadConfig("C:\\Users\\kiera\\flatchecker\\flatchecker-database\\setup\\local_db_credentials.txt")
+	config, err := ReadConfig("db_credentials.txt")
 	handleError("error reading config", err)
 	fmt.Println("successfully read config")
 
@@ -32,12 +32,11 @@ func main() {
 
 	for {
 		err = readAndPublishSchedules(ctx, dbConn, pubsubClient)
-		time.Sleep(1 * time.Second)
 		if err != nil {
 			fmt.Println("Error reading schedules", err)
 		}
+		time.Sleep(1 * time.Second)
 	}
-	fmt.Println("done")
 }
 
 func readAndPublishSchedules(ctx context.Context, dbConn *sql.DB, pubsubClient *pubsub.Client) error {
