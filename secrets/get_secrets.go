@@ -10,7 +10,7 @@ import (
 
 const GCP_PROJECT = "flatchecker"
 
-func GetSecret(name string) (string,error) {
+func GetSecret(name string) (string, error) {
 
 	secretVersionName := fmt.Sprintf("projects/%s/secrets/%s/versions/latest", GCP_PROJECT, name)
 
@@ -18,7 +18,7 @@ func GetSecret(name string) (string,error) {
 	ctx := context.Background()
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
-		return "",fmt.Errorf("failed to create secretmanager client: %w", err)
+		return "", fmt.Errorf("failed to create secretmanager client: %w", err)
 	}
 	defer client.Close()
 
