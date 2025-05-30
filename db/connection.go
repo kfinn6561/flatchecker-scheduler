@@ -16,6 +16,9 @@ const (
 
 func GetDB(config map[string]string) (*sql.DB, error) {
 	password, err := getPassword(config)
+	if err != nil {
+		return nil, fmt.Errorf("error getting password: %v", err)
+	}
 
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", config["user-name"], password, config["ip-address"], config["db-name"])
 
