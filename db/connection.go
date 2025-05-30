@@ -11,7 +11,7 @@ import (
 
 const (
 	DEV_PASSWORD_ENVIRONMENT_VARIABLE = "FLATCHECKER_SCHEDULER_DEV_PASSWORD"
-	PROD_PASSWORD_SECRET_NAME          = "flatchecker-db-password"
+	PROD_PASSWORD_SECRET_NAME         = "flatchecker-db-password"
 )
 
 func GetDB(config map[string]string) (*sql.DB, error) {
@@ -35,8 +35,8 @@ func GetDB(config map[string]string) (*sql.DB, error) {
 
 func getPassword(config map[string]string) (string, error) {
 	if config["environment"] == "dev" {
-		password, ok:= os.LookupEnv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
-		if ok{
+		password, ok := os.LookupEnv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
+		if ok {
 			return password, nil
 		} else {
 			return "", fmt.Errorf("environment variable %s not set", DEV_PASSWORD_ENVIRONMENT_VARIABLE)
