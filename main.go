@@ -38,12 +38,11 @@ func main() {
 
 	for {
 		err = readAndPublishSchedules(ctx, dbConn, pubsubClient)
-		time.Sleep(1 * time.Second)
 		if err != nil {
 			fmt.Println("Error reading schedules", err)
 		}
+		time.Sleep(1 * time.Second)
 	}
-	fmt.Println("done")
 }
 
 func readAndPublishSchedules(ctx context.Context, dbConn *sql.DB, pubsubClient *pubsub.Client) error {
