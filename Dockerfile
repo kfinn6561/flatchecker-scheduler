@@ -12,16 +12,14 @@ RUN go mod download
 COPY . .
 
 # Build the Go application
-RUN go build -o flatchecker-scheduler .
+RUN go build -o flatchecker-scheduler.exe .
 
 # Stage 2: Create a minimal image
 FROM alpine:latest
 
-WORKDIR /root/
-
 # Copy the binary from the builder stage
-COPY --from=builder /app/flatchecker-scheduler .
+COPY --from=builder /app/flatchecker-scheduler.exe .
 COPY prod_config.txt .
 
 # Command to run the application
-CMD ["./flatchecker-scheduler prod_config.txt"]
+CMD ["./flatchecker-scheduler.exe", "prod_config.txt"]
