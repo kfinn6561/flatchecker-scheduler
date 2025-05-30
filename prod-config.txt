@@ -1,0 +1,4 @@
+ip-address 35.228.46.102
+db-name flatchecker
+user-name admin
+environment prod
