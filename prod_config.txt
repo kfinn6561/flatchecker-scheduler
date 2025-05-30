@@ -1,3 +1,0 @@
-ip-address 34.88.137.236
-db-name flatchecker
-user-name admin
