@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM golang:1.20 AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go application
-RUN go build -o flatchecker-scheduler main.go
+RUN go build -o flatchecker-scheduler .
 
 # Stage 2: Create a minimal image
 FROM alpine:latest
