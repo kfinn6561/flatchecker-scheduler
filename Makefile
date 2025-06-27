@@ -10,12 +10,15 @@ IMAGE_URI := $(REGION)-docker.pkg.dev/$(PROJECT_ID)/$(REPO)/$(IMAGE_NAME):$(IMAG
 
 # ==== COMMANDS ====
 
+auth:
+	gcloud auth configure-docker $(REGION)-docker.pkg.dev
+
 # Build the Docker image
 build:
 	docker build -t $(IMAGE_URI) .
 
 # Push the image to Artifact Registry
-push: build
+push: auth build
 	docker push $(IMAGE_URI)
 
 # Clean local Docker image (optional)
