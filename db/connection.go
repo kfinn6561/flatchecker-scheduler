@@ -37,16 +37,17 @@ func GetDB(config map[string]string) (*sql.DB, error) {
 }
 
 func getPassword(config map[string]string) (string, error) {
-	if config["environment"] == "dev" {
+	switch config["environment"] {
+	case "dev":
 		password, ok := os.LookupEnv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 		if ok {
 			return password, nil
 		} else {
 			return "", fmt.Errorf("environment variable %s not set", DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 		}
-	} else if config["environment"] == "prod" {
+	case "prod":
 		return secrets.GetSecret(PROD_PASSWORD_SECRET_NAME)
-	} else {
+	default:
 		return "", fmt.Errorf("unknown environment: %s", config["environment"])
 	}
 }
