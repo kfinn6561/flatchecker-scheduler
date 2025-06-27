@@ -2,17 +2,12 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"flatchecker-scheduler/db"
-	"flatchecker-scheduler/mapper"
 	"flatchecker-scheduler/pubsublib"
 	"fmt"
 	"net/http"
 	"os"
 	"strings"
-	"time"
-
-	"cloud.google.com/go/pubsub"
 )
 
 func main() {
