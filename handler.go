@@ -21,7 +21,6 @@ func GetHandler(ctx context.Context, dbConn *sql.DB, pubsubClient *pubsub.Client
 	}
 }
 
-
 func readAndPublishSchedules(ctx context.Context, dbConn *sql.DB, pubsubClient *pubsub.Client) error {
 	schedules, err := GetAndUpdateSchedules(dbConn)
 	if err != nil {
