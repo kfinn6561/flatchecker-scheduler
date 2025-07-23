@@ -4,6 +4,8 @@ resource "google_cloud_run_service" "go_app" {
 
   template {
     spec {
+      service_account_name = var.service_account_email
+
       containers {
         image = var.image_uri
         resources {
