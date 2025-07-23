@@ -1,5 +1,5 @@
 resource "google_cloud_run_service" "go_app" {
-  name     = "go-background-worker"
+  name     = "flatchecker-scheduler"
   location = var.gcp_region
 
   template {
@@ -34,8 +34,8 @@ resource "google_cloud_run_service_iam_member" "invoker" {
 
 # Cloud Scheduler job
 resource "google_cloud_scheduler_job" "invoke_cloud_run" {
-  name        = "run-go-app-every-minute"
-  description = "Triggers Go app every minute"
+  name        = "run-scheduler-every-minute"
+  description = "Triggers the scheduler every minute"
   schedule    = "* * * * *" # Every minute
   time_zone   = "Etc/UTC"
 
