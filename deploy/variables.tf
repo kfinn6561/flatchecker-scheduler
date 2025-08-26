@@ -15,7 +15,7 @@ variable "gcp_zone" {
 
 variable "image_uri" {
   description = "Docker image in Artifact Registry"
-  default = "europe-north1-docker.pkg.dev/flatchecker/flatchecker-containers/flatchecker-scheduler:latest"
+  default     = "europe-north1-docker.pkg.dev/flatchecker/flatchecker-containers/flatchecker-scheduler:latest"
 }
 
 variable "service_account_email" {
