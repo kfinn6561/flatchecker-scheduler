@@ -42,6 +42,7 @@ resource "google_cloud_scheduler_job" "invoke_cloud_run" {
   name        = "run-scheduler-every-minute"
   description = "Triggers the scheduler every minute"
   schedule    = "* * * * *" # Every minute
+  region      = "europe-west1"  # Cloud Scheduler is not available in europe-north1
   time_zone   = "Etc/UTC"
 
   http_target {
@@ -57,8 +58,8 @@ resource "google_cloud_scheduler_job" "invoke_cloud_run" {
       "Content-Type" = "application/json"
     }
 
-    body = jsonencode({
+    body = base64encode(jsonencode({
       trigger = "scheduler"
-    })
+    }))
   }
 }
