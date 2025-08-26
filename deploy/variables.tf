@@ -25,5 +25,5 @@ variable "service_account_email" {
 
 variable "db_name" {
   description = "Database name"
-  default     = "flatchecker"
+  default     = "flatchecker-database"
 }

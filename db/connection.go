@@ -20,7 +20,12 @@ func GetDB(config map[string]string) (*sql.DB, error) {
 		return nil, fmt.Errorf("error getting password: %v", err)
 	}
 
-	connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", config["user-name"], password, config["ip-address"], config["db-name"])
+	connectionString := fmt.Sprintf(
+    "%s:%s@unix(/cloudsql/%s)/%s?parseTime=true",
+    config["user-name"], password, config["connection-name"], config["db-name"],
+)
+
+	//connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", config["user-name"], password, config["ip-address"], config["db-name"])
 
 	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
