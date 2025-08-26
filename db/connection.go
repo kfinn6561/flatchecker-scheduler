@@ -15,17 +15,11 @@ const (
 )
 
 func GetDB(config map[string]string) (*sql.DB, error) {
-	password, err := getPassword(config)
+
+	connectionString, err := getConnectionString(config)
 	if err != nil {
-		return nil, fmt.Errorf("error getting password: %v", err)
+		return nil, fmt.Errorf("error getting connection string: %v", err)
 	}
-
-	connectionString := fmt.Sprintf(
-    "%s:%s@unix(/cloudsql/%s)/%s?parseTime=true",
-    config["user-name"], password, config["connection-name"], config["db-name"],
-)
-
-	//connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", config["user-name"], password, config["ip-address"], config["db-name"])
 
 	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
@@ -39,6 +33,21 @@ func GetDB(config map[string]string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func getConnectionString(config map[string]string) (string, error) {
+	password, err := getPassword(config)
+	if err != nil {
+		return "", fmt.Errorf("error getting password: %v", err)
+	}
+	switch config["environment"] {
+	case "dev":
+		return fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", config["user-name"], password, config["ip-address"], config["db-name"]), nil
+	case "prod":
+		return fmt.Sprintf("%s:%s@unix(/cloudsql/%s)/%s?parseTime=true", config["user-name"], password, config["connection-name"], config["db-name"]), nil
+	default:
+		return "", fmt.Errorf("unknown environment: %s", config["environment"])
+	}
 }
 
 func getPassword(config map[string]string) (string, error) {
