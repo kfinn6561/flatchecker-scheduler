@@ -22,3 +22,8 @@ variable "service_account_email" {
   description = "Service account email"
   default     = "db-service-account@flatchecker.iam.gserviceaccount.com"
 }
+
+variable "db_name" {
+  description = "Database name"
+  default     = "flatchecker"
+}

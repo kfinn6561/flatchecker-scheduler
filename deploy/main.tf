@@ -3,6 +3,11 @@ resource "google_cloud_run_service" "go_app" {
   location = var.gcp_region
 
   template {
+    metadata {
+      annotations = {
+        "run.googleapis.com/cloudsql-instances" = "${var.gcp_project}:${var.gcp_region}:${var.db_name}"
+      }
+    }
     spec {
       service_account_name = var.service_account_email
 
