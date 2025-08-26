@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"flatchecker-scheduler/mapper"
 	"flatchecker-scheduler/pubsublib"
+	"fmt"
 	"net/http"
 
 	"cloud.google.com/go/pubsub"
@@ -12,8 +13,10 @@ import (
 
 func GetHandler(ctx context.Context, dbConn *sql.DB, pubsubClient *pubsub.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("received request")
 		err := readAndPublishSchedules(ctx, dbConn, pubsubClient)
 		if err != nil {
+			fmt.Println("error reading and publishing schedules:", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
