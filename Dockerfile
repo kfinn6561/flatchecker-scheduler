@@ -19,7 +19,10 @@ FROM alpine:latest
 
 # Copy the binary from the builder stage
 COPY --from=builder /app/flatchecker-scheduler.exe .
+# Copy the production configuration file
 COPY prod-config.txt .
+# Copy the db directory with sql queries
+COPY db db
 
 # Command to run the application
 CMD ["./flatchecker-scheduler.exe", "prod-config.txt"]
