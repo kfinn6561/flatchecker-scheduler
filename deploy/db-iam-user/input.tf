@@ -3,6 +3,10 @@ variable "gcp_project" {
   default     = "flatchecker"
 }
 
+variable "service_account_name" {
+  description = "Name of the service account"
+}
+
 variable "db_name" {
   description = "name of the database"
 }

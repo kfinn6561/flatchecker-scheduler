@@ -1,3 +1,22 @@
+module "db_service_account" {
+  source  = "./db-iam-user"
+  service_account_name = "scheduler-service-account"
+  db_name = var.db_name
+  db_password_secret_id = var.db_password_secret_id
+}
+
+resource "google_project_iam_member" "pubsub_publisher_binding" {
+  project = var.gcp_project
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:${module.db_service_account.db_service_account_email}"
+}
+
+resource "google_project_iam_member" "pubsub_subscriber_binding" {
+  project = var.gcp_project
+  role    = "roles/pubsub.subscriber"
+  member  = "serviceAccount:${module.db_service_account.db_service_account_email}"
+}
+
 resource "google_cloud_run_service" "go_app" {
   name     = "flatchecker-scheduler"
   location = var.gcp_region
@@ -9,7 +28,7 @@ resource "google_cloud_run_service" "go_app" {
       }
     }
     spec {
-      service_account_name = var.service_account_email
+      service_account_name = module.db_service_account.db_service_account_email
 
       containers {
         image = var.image_uri

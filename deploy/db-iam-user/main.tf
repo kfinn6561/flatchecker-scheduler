@@ -1,6 +1,6 @@
 
 resource "google_service_account" "db_service_account" {
-  account_id  = "db-service-account"
+  account_id  = var.service_account_name
   description = "Service account for the database"
 }
 

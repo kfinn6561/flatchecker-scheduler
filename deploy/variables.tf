@@ -18,11 +18,6 @@ variable "image_uri" {
   default     = "europe-north1-docker.pkg.dev/flatchecker/flatchecker-containers/flatchecker-scheduler:latest"
 }
 
-variable "service_account_email" {
-  description = "Service account email"
-  default     = "db-service-account@flatchecker.iam.gserviceaccount.com"
-}
-
 variable "db_name" {
   description = "Database name"
   default     = "flatchecker-database"
