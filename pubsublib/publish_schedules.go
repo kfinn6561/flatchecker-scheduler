@@ -3,6 +3,7 @@ package pubsublib
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"cloud.google.com/go/pubsub"
 )
@@ -17,14 +18,14 @@ type ScheduledSearchesMessage struct {
 func PublishSchedules(ctx context.Context, schedules []ScheduledSearchesMessage, client *pubsub.Client) error {
 	topic, err := GetTopic(ctx, client, SCHEDULE_TOPIC_NAME)
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting topic: %v", err)
 	}
 
 	results := make([]*pubsub.PublishResult, len(schedules))
 	for i, schedule := range schedules {
 		msgBytes, err := json.Marshal(schedule)
 		if err != nil {
-			return err
+			return fmt.Errorf("error marshaling schedule: %v", err)
 		}
 
 		msg := &pubsub.Message{
@@ -37,7 +38,7 @@ func PublishSchedules(ctx context.Context, schedules []ScheduledSearchesMessage,
 	for _, result := range results {
 		_, err = result.Get(ctx)
 		if err != nil {
-			return err
+			return fmt.Errorf("error publishing schedule: %v", err)
 		}
 	}
 

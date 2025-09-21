@@ -15,12 +15,11 @@ const (
 )
 
 func GetDB(config map[string]string) (*sql.DB, error) {
-	password, err := getPassword(config)
-	if err != nil {
-		return nil, fmt.Errorf("error getting password: %v", err)
-	}
 
-	connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", config["user-name"], password, config["ip-address"], config["db-name"])
+	connectionString, err := getConnectionString(config)
+	if err != nil {
+		return nil, fmt.Errorf("error getting connection string: %v", err)
+	}
 
 	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
@@ -36,17 +35,33 @@ func GetDB(config map[string]string) (*sql.DB, error) {
 	return db, nil
 }
 
+func getConnectionString(config map[string]string) (string, error) {
+	password, err := getPassword(config)
+	if err != nil {
+		return "", fmt.Errorf("error getting password: %v", err)
+	}
+	switch config["environment"] {
+	case "dev":
+		return fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", config["user-name"], password, config["ip-address"], config["db-name"]), nil
+	case "prod":
+		return fmt.Sprintf("%s:%s@unix(/cloudsql/%s)/%s?parseTime=true", config["user-name"], password, config["connection-name"], config["db-name"]), nil
+	default:
+		return "", fmt.Errorf("unknown environment: %s", config["environment"])
+	}
+}
+
 func getPassword(config map[string]string) (string, error) {
-	if config["environment"] == "dev" {
+	switch config["environment"] {
+	case "dev":
 		password, ok := os.LookupEnv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 		if ok {
 			return password, nil
 		} else {
 			return "", fmt.Errorf("environment variable %s not set", DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 		}
-	} else if config["environment"] == "prod" {
+	case "prod":
 		return secrets.GetSecret(PROD_PASSWORD_SECRET_NAME)
-	} else {
+	default:
 		return "", fmt.Errorf("unknown environment: %s", config["environment"])
 	}
 }
