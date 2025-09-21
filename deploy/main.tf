@@ -17,6 +17,12 @@ resource "google_project_iam_member" "pubsub_subscriber_binding" {
   member  = "serviceAccount:${module.db_service_account.db_service_account_email}"
 }
 
+resource "google_project_iam_member" "pubsub_editor_binding" {
+  project = var.gcp_project
+  role    = "roles/pubsub.editor"
+  member  = "serviceAccount:${module.db_service_account.db_service_account_email}"
+}
+
 resource "google_cloud_run_service" "go_app" {
   name     = "flatchecker-scheduler"
   location = var.gcp_region
