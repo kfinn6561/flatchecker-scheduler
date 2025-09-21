@@ -1,4 +1,4 @@
-ip-address 35.228.148.25
+ip-address 34.88.83.93
 db-name flatchecker
 connection-name flatchecker:europe-north1:flatchecker-database
 user-name admin

@@ -27,3 +27,8 @@ variable "db_name" {
   description = "Database name"
   default     = "flatchecker-database"
 }
+
+variable "db_password_secret_id"{
+  description = "Secret id for the database password"
+  default     = "flatchecker-db-password"
+}
