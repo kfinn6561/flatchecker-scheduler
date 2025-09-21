@@ -5,22 +5,10 @@ module "db_service_account" {
   db_password_secret_id = var.db_password_secret_id
 }
 
-resource "google_project_iam_member" "pubsub_publisher_binding" {
-  project = var.gcp_project
-  role    = "roles/pubsub.publisher"
-  member  = "serviceAccount:${module.db_service_account.db_service_account_email}"
-}
-
-resource "google_project_iam_member" "pubsub_subscriber_binding" {
-  project = var.gcp_project
-  role    = "roles/pubsub.subscriber"
-  member  = "serviceAccount:${module.db_service_account.db_service_account_email}"
-}
-
-resource "google_project_iam_member" "pubsub_editor_binding" {
-  project = var.gcp_project
-  role    = "roles/pubsub.editor"
-  member  = "serviceAccount:${module.db_service_account.db_service_account_email}"
+module "pubsub_permissions" {
+  source  = "./pubsub-permissions"
+  gcp_project = var.gcp_project
+  service_account_email = module.db_service_account.db_service_account_email
 }
 
 resource "google_cloud_run_service" "go_app" {
