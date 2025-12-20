@@ -42,11 +42,10 @@ func TestReadConfig_EmptyFile(t *testing.T) {
 	defer os.Remove(tmpFile.Name())
 	tmpFile.Close()
 
-	// Reading an empty file will cause a panic due to index out of range
-	// when splitting empty lines - this is a known limitation
-	assert.Panics(t, func() {
-		_, _ = ReadConfig(tmpFile.Name())
-	})
+	// Empty file should return empty config, not panic
+	config, err := ReadConfig(tmpFile.Name())
+	require.NoError(t, err)
+	assert.Empty(t, config)
 }
 
 func TestReadConfig_MultipleSpaces(t *testing.T) {
@@ -151,7 +150,7 @@ func TestReadConfig_WithNewlines(t *testing.T) {
 
 	config, err := ReadConfig(tmpFile.Name())
 	require.NoError(t, err)
-	assert.Len(t, config, 4) // 3 config lines + 1 empty line
+	assert.Len(t, config, 3) // 3 config lines, empty lines skipped
 }
 
 func TestReadConfig_TrimWhitespace(t *testing.T) {

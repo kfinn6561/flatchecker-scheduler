@@ -84,7 +84,16 @@ func ReadConfig(filename string) (map[string]string, error) {
 
 	lines := strings.Split(string(rawData), "\n")
 	for _, line := range lines {
+		// Skip empty lines
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
 		words := strings.Split(line, " ")
+		if len(words) < 2 {
+			continue // Skip malformed lines
+		}
 		out[words[0]] = strings.TrimSpace(words[1])
 	}
 
