@@ -1,7 +1,6 @@
 package db
 
 import (
-	"flatchecker-scheduler/testutil"
 	"os"
 	"testing"
 
@@ -10,12 +9,28 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// Helper function to create test config
+func createTestConfig(environment string) map[string]string {
+	config := make(map[string]string)
+	config["environment"] = environment
+	config["user-name"] = "testuser"
+	config["db-name"] = "testdb"
+
+	if environment == "dev" {
+		config["ip-address"] = "127.0.0.1"
+	} else if environment == "prod" {
+		config["connection-name"] = "project:region:instance"
+	}
+
+	return config
+}
+
 func TestGetDB_DevEnvironment_Success(t *testing.T) {
 	// Set up environment variable for dev password
 	os.Setenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE, "test-password")
 	defer os.Unsetenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 
-	config := testutil.CreateTestConfig("dev")
+	config := createTestConfig("dev")
 
 	// Note: This will try to connect to actual database
 	// In real scenario, we'd use sqlmock more extensively
@@ -32,7 +47,7 @@ func TestGetConnectionString_DevEnvironment(t *testing.T) {
 	os.Setenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE, "dev-pass-123")
 	defer os.Unsetenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 
-	config := testutil.CreateTestConfig("dev")
+	config := createTestConfig("dev")
 
 	connStr, err := getConnectionString(config)
 	require.NoError(t, err)
@@ -44,7 +59,7 @@ func TestGetConnectionString_DevEnvironment(t *testing.T) {
 func TestGetConnectionString_ProdEnvironment(t *testing.T) {
 	// For prod, we can't easily test without mocking secret manager
 	// but we can test the connection string format
-	config := testutil.CreateTestConfig("prod")
+	config := createTestConfig("prod")
 
 	// This will fail because GetSecret will try to call GCP
 	// but we can test with a mock secret getter
@@ -67,7 +82,7 @@ func TestGetConnectionString_ParseTimeParameter(t *testing.T) {
 	os.Setenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE, "password")
 	defer os.Unsetenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 
-	config := testutil.CreateTestConfig("dev")
+	config := createTestConfig("dev")
 
 	connStr, err := getConnectionString(config)
 	require.NoError(t, err)
@@ -79,7 +94,7 @@ func TestGetPassword_DevEnvironment_EnvVarSet(t *testing.T) {
 	os.Setenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE, expectedPassword)
 	defer os.Unsetenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 
-	config := testutil.CreateTestConfig("dev")
+	config := createTestConfig("dev")
 
 	password, err := getPassword(config)
 	require.NoError(t, err)
@@ -90,7 +105,7 @@ func TestGetPassword_DevEnvironment_EnvVarNotSet(t *testing.T) {
 	// Make sure env var is not set
 	os.Unsetenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 
-	config := testutil.CreateTestConfig("dev")
+	config := createTestConfig("dev")
 
 	_, err := getPassword(config)
 	assert.Error(t, err)
@@ -99,7 +114,7 @@ func TestGetPassword_DevEnvironment_EnvVarNotSet(t *testing.T) {
 }
 
 func TestGetPassword_ProdEnvironment_SecretManagerError(t *testing.T) {
-	config := testutil.CreateTestConfig("prod")
+	config := createTestConfig("prod")
 
 	// This will fail because we can't reach actual secret manager
 	_, err := getPassword(config)
@@ -119,7 +134,7 @@ func TestGetConnectionString_MissingPassword(t *testing.T) {
 	// Don't set password env var
 	os.Unsetenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 
-	config := testutil.CreateTestConfig("dev")
+	config := createTestConfig("dev")
 
 	_, err := getConnectionString(config)
 	assert.Error(t, err)
@@ -147,7 +162,7 @@ func TestGetConnectionString_SpecialCharactersInPassword(t *testing.T) {
 	os.Setenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE, specialPassword)
 	defer os.Unsetenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 
-	config := testutil.CreateTestConfig("dev")
+	config := createTestConfig("dev")
 
 	connStr, err := getConnectionString(config)
 	require.NoError(t, err)
@@ -158,7 +173,7 @@ func TestGetDB_ConnectionStringFormat(t *testing.T) {
 	os.Setenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE, "test123")
 	defer os.Unsetenv(DEV_PASSWORD_ENVIRONMENT_VARIABLE)
 
-	config := testutil.CreateTestConfig("dev")
+	config := createTestConfig("dev")
 
 	connStr, err := getConnectionString(config)
 	require.NoError(t, err)
@@ -172,7 +187,7 @@ func TestGetDB_ConnectionStringFormat(t *testing.T) {
 }
 
 func TestGetConnectionString_ProdFormat(t *testing.T) {
-	config := testutil.CreateTestConfig("prod")
+	config := createTestConfig("prod")
 
 	// We can't get a full connection string without secrets,
 	// but we can verify the error handling
@@ -228,7 +243,7 @@ func TestGetConnectionString_AllConfigKeys(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			config := testutil.CreateTestConfig(tt.environment)
+			config := createTestConfig(tt.environment)
 			connStr, err := getConnectionString(config)
 			require.NoError(t, err)
 			for _, want := range tt.wantContain {

@@ -2,8 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"flatchecker-scheduler/db"
-	"flatchecker-scheduler/testutil"
 	"testing"
 	"time"
 

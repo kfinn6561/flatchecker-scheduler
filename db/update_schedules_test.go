@@ -2,7 +2,6 @@ package db
 
 import (
 	"errors"
-	"flatchecker-scheduler/testutil"
 	"testing"
 	"time"
 
@@ -11,6 +10,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// Helper function to create test update request
+func createTestUpdateRequest(id int, nextSearch time.Time) UpdateScheduleRequest {
+	return UpdateScheduleRequest{
+		Id:         id,
+		NextSearch: nextSearch,
+	}
+}
+
 func TestUpdateSchedules_SingleUpdate_Success(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
@@ -18,7 +25,7 @@ func TestUpdateSchedules_SingleUpdate_Success(t *testing.T) {
 
 	nextSearch := time.Now().Add(30 * time.Minute)
 	requests := []UpdateScheduleRequest{
-		testutil.CreateTestUpdateRequest(1, nextSearch),
+		createTestUpdateRequest(1, nextSearch),
 	}
 
 	mock.ExpectPrepare("UPDATE (.+)").
@@ -40,11 +47,11 @@ func TestUpdateSchedules_MultipleUpdates_Success(t *testing.T) {
 
 	baseTime := time.Now()
 	requests := []UpdateScheduleRequest{
-		testutil.CreateTestUpdateRequest(1, baseTime.Add(5*time.Minute)),
-		testutil.CreateTestUpdateRequest(2, baseTime.Add(15*time.Minute)),
-		testutil.CreateTestUpdateRequest(3, baseTime.Add(30*time.Minute)),
-		testutil.CreateTestUpdateRequest(4, baseTime.Add(60*time.Minute)),
-		testutil.CreateTestUpdateRequest(5, baseTime.Add(120*time.Minute)),
+		createTestUpdateRequest(1, baseTime.Add(5*time.Minute)),
+		createTestUpdateRequest(2, baseTime.Add(15*time.Minute)),
+		createTestUpdateRequest(3, baseTime.Add(30*time.Minute)),
+		createTestUpdateRequest(4, baseTime.Add(60*time.Minute)),
+		createTestUpdateRequest(5, baseTime.Add(120*time.Minute)),
 	}
 
 	prep := mock.ExpectPrepare("UPDATE (.+)")
@@ -83,7 +90,7 @@ func TestUpdateSchedules_PrepareError(t *testing.T) {
 	defer db.Close()
 
 	requests := []UpdateScheduleRequest{
-		testutil.CreateTestUpdateRequest(1, time.Now()),
+		createTestUpdateRequest(1, time.Now()),
 	}
 
 	expectedErr := errors.New("failed to prepare statement")
@@ -103,8 +110,8 @@ func TestUpdateSchedules_ExecuteError(t *testing.T) {
 	defer db.Close()
 
 	requests := []UpdateScheduleRequest{
-		testutil.CreateTestUpdateRequest(1, time.Now()),
-		testutil.CreateTestUpdateRequest(2, time.Now()),
+		createTestUpdateRequest(1, time.Now()),
+		createTestUpdateRequest(2, time.Now()),
 	}
 
 	prep := mock.ExpectPrepare("UPDATE (.+)")
@@ -130,7 +137,7 @@ func TestUpdateSchedules_VerifyParameters(t *testing.T) {
 
 	specificTime := time.Date(2024, 12, 20, 15, 30, 0, 0, time.UTC)
 	requests := []UpdateScheduleRequest{
-		testutil.CreateTestUpdateRequest(10, specificTime),
+		createTestUpdateRequest(10, specificTime),
 	}
 
 	mock.ExpectPrepare("UPDATE (.+)").
@@ -166,7 +173,7 @@ func TestUpdateSchedules_TimeFormatting(t *testing.T) {
 
 	var requests []UpdateScheduleRequest
 	for i, testTime := range testCases {
-		requests = append(requests, testutil.CreateTestUpdateRequest(i+1, testTime))
+		requests = append(requests, createTestUpdateRequest(i+1, testTime))
 	}
 
 	err = UpdateSchedules(requests, db)
@@ -182,9 +189,9 @@ func TestUpdateSchedules_StatementReuse(t *testing.T) {
 	defer db.Close()
 
 	requests := []UpdateScheduleRequest{
-		testutil.CreateTestUpdateRequest(1, time.Now()),
-		testutil.CreateTestUpdateRequest(2, time.Now()),
-		testutil.CreateTestUpdateRequest(3, time.Now()),
+		createTestUpdateRequest(1, time.Now()),
+		createTestUpdateRequest(2, time.Now()),
+		createTestUpdateRequest(3, time.Now()),
 	}
 
 	// Expect single Prepare call (statement reuse)
@@ -211,7 +218,7 @@ func TestUpdateSchedules_LargeBatch(t *testing.T) {
 	requests := make([]UpdateScheduleRequest, 1000)
 	baseTime := time.Now()
 	for i := 0; i < 1000; i++ {
-		requests[i] = testutil.CreateTestUpdateRequest(i+1, baseTime.Add(time.Duration(i)*time.Minute))
+		requests[i] = createTestUpdateRequest(i+1, baseTime.Add(time.Duration(i)*time.Minute))
 	}
 
 	prep := mock.ExpectPrepare("UPDATE (.+)")
@@ -237,7 +244,7 @@ func TestUpdateSchedules_ParameterOrder(t *testing.T) {
 	scheduleID := 42
 
 	requests := []UpdateScheduleRequest{
-		testutil.CreateTestUpdateRequest(scheduleID, nextSearch),
+		createTestUpdateRequest(scheduleID, nextSearch),
 	}
 
 	// Verify parameters are passed in correct order: NextSearch, Id
