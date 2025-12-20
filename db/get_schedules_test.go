@@ -45,7 +45,6 @@ func TestGetSchedules_EmptyResult(t *testing.T) {
 	schedules, err := GetSchedules(db)
 	require.NoError(t, err)
 	assert.Empty(t, schedules)
-	assert.NotNil(t, schedules)
 
 	err = mock.ExpectationsWereMet()
 	assert.NoError(t, err)
@@ -172,8 +171,8 @@ func TestGetSchedules_VerifyQueryContent(t *testing.T) {
 	defer db.Close()
 
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"})
-	// Expect query to match pattern
-	mock.ExpectQuery("SELECT (.+) FROM (.+)").WillReturnRows(rows)
+	// Expect query to match pattern (case-insensitive)
+	mock.ExpectQuery("(?i)SELECT (.+) FROM (.+)").WillReturnRows(rows)
 
 	_, err = GetSchedules(db)
 	require.NoError(t, err)

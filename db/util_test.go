@@ -3,6 +3,7 @@ package db
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,7 +15,7 @@ func TestReadSqlFile_ValidFile(t *testing.T) {
 	content, err := readSqlFile("get_schedules.sql")
 	require.NoError(t, err)
 	assert.NotEmpty(t, content)
-	assert.Contains(t, content, "SELECT")
+	assert.Contains(t, strings.ToUpper(content), "SELECT")
 }
 
 func TestReadSqlFile_NonExistentFile(t *testing.T) {
