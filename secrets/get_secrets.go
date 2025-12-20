@@ -10,8 +10,21 @@ import (
 
 const GCP_PROJECT = "flatchecker"
 
-func GetSecret(name string) (string, error) {
+// SecretGetter is an interface for retrieving secrets
+type SecretGetter interface {
+	GetSecret(name string) (string, error)
+}
 
+// GCPSecretGetter implements SecretGetter using Google Cloud Secret Manager
+type GCPSecretGetter struct{}
+
+// NewSecretGetter creates a new SecretGetter
+func NewSecretGetter() SecretGetter {
+	return &GCPSecretGetter{}
+}
+
+// GetSecret retrieves a secret from Google Cloud Secret Manager
+func (g *GCPSecretGetter) GetSecret(name string) (string, error) {
 	secretVersionName := fmt.Sprintf("projects/%s/secrets/%s/versions/latest", GCP_PROJECT, name)
 
 	// Create the client.
@@ -34,4 +47,10 @@ func GetSecret(name string) (string, error) {
 	}
 
 	return string(result.Payload.Data), nil
+}
+
+// GetSecret is a convenience function that uses the default GCP implementation
+func GetSecret(name string) (string, error) {
+	getter := NewSecretGetter()
+	return getter.GetSecret(name)
 }
