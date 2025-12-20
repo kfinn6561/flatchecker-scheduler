@@ -22,7 +22,7 @@ func TestGetAndUpdateSchedules_Success(t *testing.T) {
 		AddRow(2, 20, now, 60).
 		AddRow(3, 30, now, 120)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	// Mock UpdateSchedules
 	prep := mock.ExpectPrepare("UPDATE (.+)")
@@ -44,7 +44,7 @@ func TestGetAndUpdateSchedules_EmptySchedules(t *testing.T) {
 	defer mockDB.Close()
 
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"})
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 	mock.ExpectPrepare("UPDATE (.+)")
 
 	schedules, err := GetAndUpdateSchedules(mockDB)
@@ -60,7 +60,7 @@ func TestGetAndUpdateSchedules_GetSchedulesError(t *testing.T) {
 	require.NoError(t, err)
 	defer mockDB.Close()
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnError(sql.ErrConnDone)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnError(sql.ErrConnDone)
 
 	_, err = GetAndUpdateSchedules(mockDB)
 	assert.Error(t, err)
@@ -80,7 +80,7 @@ func TestGetAndUpdateSchedules_TimeCalculation(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"}).
 		AddRow(1, 10, startTime, delayMinutes)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	prep := mock.ExpectPrepare("UPDATE (.+)")
 	// Capture the time argument to verify it's approximately correct
@@ -110,7 +110,7 @@ func TestGetAndUpdateSchedules_MultipleSchedulesDifferentDelays(t *testing.T) {
 		AddRow(2, 20, now, 15).
 		AddRow(3, 30, now, 30)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	prep := mock.ExpectPrepare("UPDATE (.+)")
 	prep.ExpectExec().WithArgs(sqlmock.AnyArg(), 1).WillReturnResult(sqlmock.NewResult(0, 1))
@@ -137,7 +137,7 @@ func TestGetAndUpdateSchedules_ZeroDelay(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"}).
 		AddRow(1, 10, now, 0)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	prep := mock.ExpectPrepare("UPDATE (.+)")
 	prep.ExpectExec().WithArgs(sqlmock.AnyArg(), 1).WillReturnResult(sqlmock.NewResult(0, 1))
@@ -162,7 +162,7 @@ func TestGetAndUpdateSchedules_LargeDelay(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"}).
 		AddRow(1, 10, now, oneWeekMinutes)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	prep := mock.ExpectPrepare("UPDATE (.+)")
 	prep.ExpectExec().WithArgs(sqlmock.AnyArg(), 1).WillReturnResult(sqlmock.NewResult(0, 1))
@@ -185,7 +185,7 @@ func TestGetAndUpdateSchedules_UpdateSchedulesError(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"}).
 		AddRow(1, 10, now, 30)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 	mock.ExpectPrepare("UPDATE (.+)").WillReturnError(sql.ErrConnDone)
 
 	_, err = GetAndUpdateSchedules(mockDB)
@@ -207,7 +207,7 @@ func TestGetAndUpdateSchedules_UpdateRequestMapping(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"}).
 		AddRow(scheduleID, 50, now, delayMinutes)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	prep := mock.ExpectPrepare("UPDATE (.+)")
 	prep.ExpectExec().WithArgs(sqlmock.AnyArg(), scheduleID).WillReturnResult(sqlmock.NewResult(0, 1))

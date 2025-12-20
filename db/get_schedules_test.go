@@ -21,7 +21,7 @@ func TestGetSchedules_Success(t *testing.T) {
 		AddRow(2, 20, time.Now().Add(time.Hour), 60).
 		AddRow(3, 30, time.Now().Add(2*time.Hour), 120)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	schedules, err := GetSchedules(db)
 	require.NoError(t, err)
@@ -40,7 +40,7 @@ func TestGetSchedules_EmptyResult(t *testing.T) {
 	defer db.Close()
 
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"})
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	schedules, err := GetSchedules(db)
 	require.NoError(t, err)
@@ -57,7 +57,7 @@ func TestGetSchedules_QueryError(t *testing.T) {
 	defer db.Close()
 
 	expectedErr := errors.New("database connection lost")
-	mock.ExpectQuery("SELECT (.+)").WillReturnError(expectedErr)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnError(expectedErr)
 
 	_, err = GetSchedules(db)
 	assert.Error(t, err)
@@ -76,7 +76,7 @@ func TestGetSchedules_ScanError(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"}).
 		AddRow("not-an-int", 10, time.Now(), 30)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	_, err = GetSchedules(db)
 	assert.Error(t, err)
@@ -95,7 +95,7 @@ func TestGetSchedules_RowsError(t *testing.T) {
 		AddRow(1, 10, time.Now(), 30).
 		RowError(0, errors.New("row iteration error"))
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	_, err = GetSchedules(db)
 	assert.Error(t, err)
@@ -113,7 +113,7 @@ func TestGetSchedules_TimeParsingPastDate(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"}).
 		AddRow(1, 10, pastTime, 30)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	schedules, err := GetSchedules(db)
 	require.NoError(t, err)
@@ -133,7 +133,7 @@ func TestGetSchedules_TimeParsingFutureDate(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"ScheduleId", "SearchId", "NextSearch", "SearchDelayMinutes"}).
 		AddRow(1, 10, futureTime, 30)
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	schedules, err := GetSchedules(db)
 	require.NoError(t, err)
@@ -154,7 +154,7 @@ func TestGetSchedules_LargeResultSet(t *testing.T) {
 		rows.AddRow(i, i*100, time.Now(), 30)
 	}
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	schedules, err := GetSchedules(db)
 	require.NoError(t, err)
@@ -204,7 +204,7 @@ func TestGetSchedules_VariousDelayValues(t *testing.T) {
 		AddRow(3, 30, time.Now(), 1440). // 1 day
 		AddRow(4, 40, time.Now(), 10080) // 1 week
 
-	mock.ExpectQuery("SELECT (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("(?i)SELECT (.+)").WillReturnRows(rows)
 
 	schedules, err := GetSchedules(db)
 	require.NoError(t, err)
