@@ -6,7 +6,9 @@ toolchain go1.23.8
 
 require (
 	cloud.google.com/go/pubsub v1.49.0
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/go-sql-driver/mysql v1.9.2
+	github.com/stretchr/testify v1.10.0
 )
 
 require (
