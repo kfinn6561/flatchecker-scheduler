@@ -15,8 +15,24 @@ type ScheduledSearchesMessage struct {
 	SearchId   int
 }
 
-func PublishSchedules(ctx context.Context, schedules []ScheduledSearchesMessage, client *pubsub.Client) error {
-	topic, err := GetTopic(ctx, client, SCHEDULE_TOPIC_NAME)
+// Publisher is an interface for publishing schedules
+type Publisher interface {
+	PublishSchedules(ctx context.Context, schedules []ScheduledSearchesMessage) error
+}
+
+// GCPPublisher implements Publisher using Google Cloud Pub/Sub
+type GCPPublisher struct {
+	client *pubsub.Client
+}
+
+// NewPublisher creates a new Publisher
+func NewPublisher(client *pubsub.Client) Publisher {
+	return &GCPPublisher{client: client}
+}
+
+// PublishSchedules publishes schedules to Pub/Sub
+func (p *GCPPublisher) PublishSchedules(ctx context.Context, schedules []ScheduledSearchesMessage) error {
+	topic, err := GetTopic(ctx, p.client, SCHEDULE_TOPIC_NAME)
 	if err != nil {
 		return fmt.Errorf("error getting topic: %v", err)
 	}
@@ -43,4 +59,10 @@ func PublishSchedules(ctx context.Context, schedules []ScheduledSearchesMessage,
 	}
 
 	return nil
+}
+
+// PublishSchedules is a convenience function that uses the client directly
+func PublishSchedules(ctx context.Context, schedules []ScheduledSearchesMessage, client *pubsub.Client) error {
+	publisher := NewPublisher(client)
+	return publisher.PublishSchedules(ctx, schedules)
 }
